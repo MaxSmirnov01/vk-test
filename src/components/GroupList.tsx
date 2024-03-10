@@ -3,13 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getGroupList } from '../store/groupListSlice';
 import { AppDispatch, RootState } from '../store/store';
 import GroupCard from './GroupCard';
-import { Container } from '@mui/material';
+import { Box, CircularProgress, Container } from '@mui/material';
 
 const GroupList = () => {
   const dispatch: AppDispatch = useDispatch();
-  const data = useSelector((state: RootState) => state.groupList);
-
-  console.log(data.data);
+  const { data, selectedGroupId, status } = useSelector((state: RootState) => state.groupList);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,9 +20,17 @@ const GroupList = () => {
   }, [dispatch]);
 
   return (
-    <Container sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 3, my: 3 }}>
-      {data.data && data.data.map((group) => <GroupCard key={group.id} group={group} />)}
-    </Container>
+    <>
+      {status === 'pending' ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Container component="main" sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 3, my: 3 }}>
+          {data && data.map((group) => <GroupCard key={group.id} group={group} selectedGroupId={selectedGroupId} />)}
+        </Container>
+      )}
+    </>
   );
 };
 

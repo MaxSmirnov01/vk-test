@@ -51,27 +51,35 @@ interface User {
 
 interface State {
   data: Group[];
+  selectedGroupId: null | number;
+  status: string;
   error: null | string;
 }
 
-const initialState: State = { data: [], error: null };
+const initialState: State = { data: [], selectedGroupId: null, status: 'pending', error: null };
 
 const groupListSlice = createSlice({
   name: 'groupListSlice',
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedGroupId: (state, { payload }) => {
+      state.selectedGroupId = payload;
+    },
+  },
   extraReducers: (buider) => {
     buider
       .addCase(getGroupList.fulfilled, (state, { payload }) => {
         if (payload) {
           state.data = payload;
+          state.status = 'fulfilled';
         }
       })
       .addCase(getGroupList.rejected, (state, { payload }) => {
         state.error = (payload as Error).message;
+        state.status = 'rejected';
       });
   },
 });
 
-export const {} = groupListSlice.actions;
+export const { setSelectedGroupId } = groupListSlice.actions;
 export default groupListSlice.reducer;
