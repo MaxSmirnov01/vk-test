@@ -1,4 +1,6 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { State, Filter } from '../types/store';
+import { GetGroupsResponse } from '../types/api';
 
 export const getGroupList = createAsyncThunk('groupList/getGroupList', async (_, { rejectWithValue }) => {
   try {
@@ -30,33 +32,13 @@ export const getGroupList = createAsyncThunk('groupList/getGroupList', async (_,
   }
 });
 
-interface GetGroupsResponse {
-  result: 1 | 0;
-  data?: Group[];
-}
-
-export interface Group {
-  id: number;
-  name: string;
-  closed: boolean;
-  avatar_color?: string;
-  members_count: number;
-  friends?: User[];
-}
-
-interface User {
-  first_name: string;
-  last_name: string;
-}
-
-interface State {
-  data: Group[];
-  selectedGroupId: null | number;
-  status: string;
-  error: null | string;
-}
-
-const initialState: State = { data: [], selectedGroupId: null, status: 'pending', error: null };
+const initialState: State = {
+  data: [],
+  filters: { closed: 'all', avatar_color: 'all', friends: 'all' },
+  selectedGroupId: null,
+  status: 'pending',
+  error: null,
+};
 
 const groupListSlice = createSlice({
   name: 'groupListSlice',
@@ -65,7 +47,11 @@ const groupListSlice = createSlice({
     setSelectedGroupId: (state, { payload }) => {
       state.selectedGroupId = payload;
     },
+    setFilter: (state, { payload }: PayloadAction<Filter>) => {
+      state.filters = { ...state.filters, ...payload };
+    },
   },
+
   extraReducers: (buider) => {
     buider
       .addCase(getGroupList.fulfilled, (state, { payload }) => {
@@ -81,5 +67,5 @@ const groupListSlice = createSlice({
   },
 });
 
-export const { setSelectedGroupId } = groupListSlice.actions;
+export const { setSelectedGroupId, setFilter } = groupListSlice.actions;
 export default groupListSlice.reducer;
