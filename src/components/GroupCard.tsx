@@ -24,6 +24,9 @@ const GroupCard = ({ group, selectedGroupId }: { group: Group; selectedGroupId: 
             '& .MuiCardHeader-title': { fontSize: 40 },
             '& .MuiCardHeader-subheader': { fontSize: 30 },
             '& .MuiCardHeader-avatar': { border: '1px solid', borderRadius: '50%' },
+            '& .MuiCardHeader-content': {
+              ...(group.avatar_color ? {} : { display: 'flex', flexDirection: 'column', alignItems: 'center' }),
+            },
           }}
           avatar={
             group.avatar_color && (
